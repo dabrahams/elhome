@@ -1,4 +1,5 @@
 (require 'initsplit)
+(setq initsplit-default-directory elhome-settings-directory)
 
 ;; Load up any customization themes based on the system-type and the
 ;; system-name.  This allows us to use the customize interface (via
@@ -11,5 +12,6 @@
 (dolist (x '(type name))
   (let* ((var-name (concat "system-" (symbol-name x))) 
          (var-value (eval (intern var-name)))
-         (theme (intern (concat var-name "-" (format "%s" var-value)))))
+         (theme (intern (concat var-name "-" (format "%s" var-value))))
+         (load-path (list elhome-settings-directory)))
     (ignore-errors (load-theme theme))))
