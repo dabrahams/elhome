@@ -37,3 +37,26 @@ on initsplit!"
 
     ad-do-it))
 
+(defun elhome-remove-empty-stanza (symbol)
+  "Find the first call to symbol, and if there are no arguments
+in this call, delete the call.
+
+This is used to remove empty custom-set-* stanzas."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward (concat "(" (symbol-name symbol)))
+    (goto-char (match-beginning 0))
+    (let ((start (point))
+          (sexp (read (current-buffer))))
+      (when (= 1 (length sexp))
+          (custom-save-delete symbol)))))
+
+(defadvice custom-save-variables (after no-empty-stanzas
+                                        activate compile preactivate)
+  "Delete empty customization stanzas for variables."
+  (elhome-remove-empty-stanza 'custom-set-variables))
+
+(defadvice custom-save-faces (after no-empty-stanzas
+                                     activate compile preactivate)
+  "Delete empty customization stanzas for faces."
+  (elhome-remove-empty-stanza 'custom-set-faces))
